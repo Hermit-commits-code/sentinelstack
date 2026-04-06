@@ -110,3 +110,167 @@ Critical for monitoring and infrastructure systems.
 
 - Data stored in variables (like lists)
 - Temporary (resets when server restarts)
+
+## FastAPI — Retention Notes
+
+### What happens when the FastAPI server restarts?
+
+- In development, `--reload` detects code changes and restarts the server.
+- In-memory data such as `users = []` is reset on restart.
+- This means all temporary user data is lost.
+
+---
+
+### Why is storing data in a Python list not enough for real applications?
+
+- Data is lost when the server restarts.
+- Data is not persistent.
+- Multiple server instances would not share the same list.
+- Lists do not provide database-level querying, constraints, or durability.
+
+---
+
+### Behavior difference between GET and POST
+
+- `GET /users` reads and returns existing data.
+- `POST /users` accepts incoming data and changes application state by creating new data.
+
+---
+
+### What format does FastAPI expect in a POST request body?
+
+FastAPI expects JSON request body data, which it parses into Python data structures.
+
+---
+
+### What is the problem with `user: dict`?
+
+Using `user: dict` accepts any dictionary structure without validation.
+
+Problems:
+
+- required fields are not enforced
+- field names are not enforced
+- data types are not enforced
+- malformed input can be accepted
+
+This is why structured validation with Pydantic is important.
+
+---
+
+## Pydantic — Core Concepts
+
+### What is Pydantic?
+
+A library used to validate and enforce data structure in Python applications.
+
+---
+
+### What is a BaseModel?
+
+A class that defines the expected structure and types of data.
+
+---
+
+### Why use Pydantic instead of dict?
+
+- Enforces required fields
+- Enforces data types
+- Prevents invalid input
+- Provides automatic error responses
+
+---
+
+### What happens on invalid input?
+
+FastAPI returns a structured validation error response automatically.
+
+---
+
+### Pydantic v2 change
+
+- `.dict()` is deprecated
+- Use `.model_dump()` instead
+
+---
+
+### What does `user: User` do?
+
+- Parses incoming JSON
+- Validates it against the model
+- Rejects invalid data before your function runs
+
+---
+
+## Pydantic — Validation Behavior
+
+### What happens if a required field is missing?
+
+FastAPI returns a 422 validation error.
+The route function is never executed.
+
+---
+
+### What happens if a type is incorrect?
+
+FastAPI returns a 422 validation error due to type mismatch.
+
+---
+
+### Why is `user: dict` dangerous?
+
+- Accepts any structure
+- Does not enforce required fields
+- Does not enforce types
+- Allows invalid or unexpected data
+
+---
+
+### What does `user.model_dump()` do?
+
+Converts a Pydantic model into a Python dictionary.
+
+---
+
+### Where does validation happen?
+
+Validation happens BEFORE the route function runs.
+
+Flow:
+
+1. Request received
+2. Data validated by Pydantic
+3. If invalid → error returned
+4. If valid → function executes
+
+---
+
+## FastAPI — In-Memory State
+
+### What does `users = []` represent?
+
+It creates temporary in-memory storage for user data while the server process is running.
+
+---
+
+### Why do users disappear after a reload?
+
+The server process restarts during reload, so in-memory data is reset.
+
+---
+
+### What does `--reload` do?
+
+It watches project files for changes and automatically restarts the development server.
+
+---
+
+### Why use in-memory storage first?
+
+It allows route behavior and request flow to be tested before adding persistence.
+
+---
+
+### What is the next step after in-memory storage?
+
+Use a database or other persistent storage so data survives restarts.

@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+from app.routes.users import router as users_router
 
-users = []
+app = FastAPI()
 
 
 @app.get("/")
@@ -15,12 +15,4 @@ def health_check():
     return {"status": "ok"}
 
 
-@app.get("/users")
-def get_users():
-    return {"users": users}
-
-
-@app.post("/users")
-def create_user(user: dict):
-    users.append(user)
-    return {"message": "User created", "user": user}
+app.include_router(users_router)
