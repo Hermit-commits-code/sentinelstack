@@ -274,3 +274,118 @@ It allows route behavior and request flow to be tested before adding persistence
 ### What is the next step after in-memory storage?
 
 Use a database or other persistent storage so data survives restarts.
+
+---
+
+## FastAPI — Query Parameters
+
+### What is a query parameter?
+
+A value passed in the URL after `?` used to filter or modify responses.
+
+Example:
+`/users?name=Joseph`
+
+---
+
+### Why use `name: str = None`?
+
+Makes the parameter optional.
+If not provided, it defaults to None.
+
+---
+
+### Where do query parameters come from?
+
+They come from the URL, not from request body or models.
+
+---
+
+### What happens if no data matches?
+
+Returns an empty list, not an error.
+
+---
+
+## FastAPI — Path Parameters
+
+### What is a path parameter?
+
+A dynamic part of a URL used to identify a specific resource.
+
+Example:
+`/users/{index}`
+
+---
+
+### What does FastAPI do with path parameters?
+
+- Parses them from the URL
+- Converts them to the specified type
+- Passes them into the function
+
+---
+
+### Why validate path parameters?
+
+To prevent crashes and ensure safe responses.
+
+---
+
+## FastAPI — Model Design
+
+### Why separate input and output models?
+
+Using one model for everything can expose fields that should not be controlled by the client.
+
+Example problem:
+
+- Client can send their own `id`
+- Leads to invalid or conflicting data
+
+---
+
+### What is `UserCreate`?
+
+Represents incoming request data.
+
+Used for:
+
+- POST requests
+- client input
+
+---
+
+### What is `User`?
+
+Represents stored and returned data.
+
+Includes:
+
+- system-generated fields (like `id`)
+
+---
+
+### Why generate IDs in the backend?
+
+- ensures uniqueness
+- prevents collisions
+- prevents client manipulation
+- standard practice in APIs
+
+---
+
+### Why are UUIDs used?
+
+- globally unique
+- safe across distributed systems
+- do not rely on ordering
+
+---
+
+### Why not use list index?
+
+- unstable if list changes
+- not unique
+- not scalable
+- breaks with persistence

@@ -526,29 +526,97 @@
 - How should route files, models, and future database code be organized as the project grows?
 
 ## Day 14 — FastAPI Phase 4 (Query Parameters + Filtering)
+
 **Date:** 2026-04-06
 **Focus Area:** Backend (FastAPI)
 
 ### Learned
+
 - APIs can accept input via query parameters in the URL.
 - Optional parameters can be defined using default values (e.g. `name: str = None`).
 - Backend logic can dynamically filter data based on incoming parameters.
 - Query parameters allow flexible data retrieval without modifying endpoints.
 
 ### Built
+
 - Extended GET `/users` endpoint to accept an optional `name` parameter.
 - Implemented filtering logic to return only matching users.
 - Verified both full and filtered responses using browser and `/docs`.
 - Tested multiple users and confirmed correct filtering behavior.
 
 ### Broke
+
 - No major issues encountered during implementation.
 
 ### Fixed
+
 - Ensured conditional logic handled both cases (with and without query parameter).
 - Verified correct structure of filtered results.
 
 ### Questions
+
 - How do we handle multiple filters (e.g. name + age)?
 - How do we optimize filtering when data grows large?
 
+## Day 15 — FastAPI Phase 5 (Path Parameters)
+
+**Date:** 2026-04-06
+**Focus Area:** Backend (FastAPI)
+
+### Learned
+
+- Path parameters allow dynamic URL segments (e.g. `/users/{index}`).
+- FastAPI automatically converts path parameters to the specified type.
+- Route parameters must match function arguments.
+- Backend logic must validate inputs to avoid runtime errors.
+
+### Built
+
+- Implemented GET `/users/{index}` endpoint.
+- Retrieved individual users based on index.
+- Added validation to handle out-of-range indexes.
+- Tested valid and invalid requests via browser and `/docs`.
+
+### Broke
+
+- Attempted invalid indexes (negative or out-of-range).
+
+### Fixed
+
+- Added boundary checks to prevent crashes and return safe responses.
+
+### Questions
+
+- What is a better identifier than list index for real applications?
+- How do APIs uniquely identify resources across systems?
+
+## Day 16 — FastAPI Phase 6 (ID System + Model Separation)
+
+**Date:** 2026-04-06
+**Focus Area:** Backend (FastAPI)
+
+### Learned
+
+- Unique identifiers (UUIDs) are used to reliably identify resources.
+- Separating input models and output models improves API design.
+- Clients should not control system-generated fields like IDs.
+- Backend-generated IDs ensure consistency and prevent conflicts.
+- FastAPI uses Pydantic models to define and enforce data structures.
+
+### Built
+
+- Introduced UUID-based IDs for users.
+- Replaced index-based lookup with ID-based lookup.
+- Created separate models: `UserCreate` (input) and `User` (stored/returned).
+- Updated POST `/users` to generate IDs internally.
+- Updated GET `/users/{user_id}` to retrieve users by ID.
+- Verified full flow: create → retrieve by ID → filter.
+
+### Broke
+
+- Initial design exposed `id` in request body unintentionally.
+
+### Fixed
+
+- Split models into `UserCreate` and `User`.
+- Ensured only backend generates IDs.
